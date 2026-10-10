@@ -1,0 +1,9 @@
+DIGICOM TOGO - APPLICATION ACHETEURS (publique, sans compilation)
+
+Ouvrir index.html dans l'aperçu Spck (internet requis).
+Config Firebase : déjà remplie dans config.js (base Firestore "default").
+Connexion : numéro de téléphone (8 chiffres) + mot de passe, sans SMS.
+Avant de tester : publier les règles Firestore (blocs favoris + promos à ajouter), voir le chat.
+Offres du jour : un produit avec les champs  prixPromo  (nombre) et, en option,  promoFin  (date)  s'affiche en promo.
+Code promo : collection  promos , ID du document = le code en MAJUSCULES (ex. BIENVENUE), champs :
+  type = "pourcent" ou "montant" (string), valeur (number), actif (boolean), fin (timestamp, option), min (number, option).
