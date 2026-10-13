@@ -8,7 +8,15 @@
 <link rel="manifest" href="manifest.json" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <link rel="stylesheet" href="styles.css" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png" />
+<meta name="theme-color" content="#006a4e" />
 <title>DigiCom Togo</title>
+</head>
+<body>
+<div id="root"><p style="padding:20px;font-family:sans-serif">Chargement…</p></div>
+<script type="module" src="app.js"></script>
+<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 <script type="importmap">
 { "imports": {
   "react": "https://esm.sh/react@18.3.1",
@@ -19,10 +27,5 @@
   "firebase/firestore": "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
 } }
 </script>
-</head>
-<body>
-<div id="root"><p style="padding:20px;font-family:sans-serif">Chargement…</p></div>
-<script type="module" src="app.js"></script>
-<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>
 </html>
