@@ -2,7 +2,7 @@
   "name": "DigiCom Togo - Acheteurs",
   "short_name": "DigiCom",
   "description": "Achetez local au Togo",
-  "start_url": "/digicom-togo/#/",
+  "start_url": "/https://nouvelletechnologie.github.io/digicom-togo/",
   "scope": "/digicom-togo/",
   "display": "standalone",
   "background_color": "#ffffff",
