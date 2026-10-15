@@ -1,32 +1,79 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="theme-color" content="#006a4e" />
-<link rel="icon" href="icon.svg" type="image/svg+xml" />
-<link rel="manifest" href="manifest.json" />
-<link rel="apple-touch-icon" href="./icon-192.png" />
-<link rel="stylesheet" href="styles.css" />
-<link rel="manifest" href="./manifest.json" />
-<meta name="theme-color" content="#006a4e" />  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#006A4E">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="stylesheet" href="./styles.css">
 <link rel="manifest" href="./manifest.json">
-<script src="./config.js"></script>
 <title>Boutique DigiCom Togo</title>
+<style>
+#installBox{
+  position:fixed; bottom:15px; left:10px; right:10px;
+  background:#006A4E; color:white; padding:16px;
+  border-radius:14px; text-align:center; z-index:99999;
+  box-shadow:0 4px 15px rgba(0,0,0,0.3);
+  display:none;
+}
+#btnInstall{
+  background:white; color:#006A4E; border:none;
+  padding:12px; width:100%; border-radius:8px;
+  font-weight:bold; font-size:16px; margin-top:8px;
+}
+</style>
+<script type="module" src="./config.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1",
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
+  }
+}
+</script>
 </head>
 <body>
-<div id="root"><p style="padding:20px;font-family:sans-serif">Chargement…</p></div>
-<script type="module" src="app.js"></script>
-<script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
-<script type="importmap">
-{ "imports": {
-  "react": "https://esm.sh/react@18.3.1",
-  "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1",
-  "htm": "https://esm.sh/htm@3.1.1",
-  "firebase/app": "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js",
-  "firebase/auth": "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js",
-  "firebase/firestore": "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
-} }
-  </script>
+
+<!-- BOUTON QUI RESTE TOUJOURS VISIBLE -->
+<div id="installBox">
+  📲 Installer DigiCom comme une vraie appli<br>
+  <button id="btnInstall">TÉLÉCHARGER L'APPLICATION</button>
+  <div id="helpText" style="font-size:12px; margin-top:8px; display:none;">Si rien ne se passe : ⋮ > Installer l'application</div>
+</div>
+
+<div id="root" style="padding:20px; font-family:sans-serif;">Chargement...</div>
+
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').then(()=>{}).catch(()=>{});
+}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  document.getElementById('installBox').style.display='block';
+});
+// Affiche quand même le bouton après 2 sec même si le navigateur bloque l'event
+setTimeout(()=>{ document.getElementById('installBox').style.display='block'; }, 2000);
+
+document.getElementById('btnInstall').addEventListener('click', async()=>{
+  const help=document.getElementById('helpText');
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const choice=await deferredPrompt.userChoice;
+    if(choice.outcome==='accepted'){
+      document.getElementById('installBox').style.display='none';
+    }
+    deferredPrompt=null;
+  }else{
+    help.style.display='block';
+    alert("Pour installer : Clique sur les 3 points ⋮ en haut à droite de Chrome > Installer l'application");
+  }
+});
+</script>
 </body>
 </html>
