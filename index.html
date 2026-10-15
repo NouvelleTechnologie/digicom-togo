@@ -18,24 +18,6 @@
 <title>DigiCom Togo</title>
 </head>
 <body>
-
-<div id="installBox" style="display:none; position:fixed; bottom:20px; left:10px; right:10px; background:#006A4E; color:white; padding:14px; border-radius:12px; z-index:9999; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-  📲 Installer DigiCom sur votre téléphone<br>
-  <button id="btnInstall" style="margin-top:8px; background:white; color:#006A4E; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; width:100%;">TÉLÉCHARGER L'APP</button>
-</div>
-
-<script>
-let promptEvent=null;
-window.addEventListener('beforeinstallprompt', e=>{
-  e.preventDefault();
-  promptEvent=e;
-  document.getElementById('installBox').style.display='block';
-});
-document.getElementById('btnInstall').addEventListener('click', async()=>{
-  if(promptEvent){ promptEvent.prompt(); await promptEvent.userChoice; promptEvent=null; document.getElementById('installBox').style.display='none'; }
-});
-</script>
-  
 <div id="root"><p style="padding:20px;font-family:sans-serif">Chargement…</p></div>
 <script type="module" src="app.js"></script>
 <script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
@@ -48,6 +30,6 @@ document.getElementById('btnInstall').addEventListener('click', async()=>{
   "firebase/auth": "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js",
   "firebase/firestore": "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
 } }
-</script>
+  </script>
 </body>
 </html>
