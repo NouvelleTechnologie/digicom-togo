@@ -1,8 +1,7 @@
 {
-  "name": "DigiCom Togo - Acheteurs",
+  "name": "DigiCom Togo",
   "short_name": "DigiCom",
-  "description": "Achetez local au Togo",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -21,3 +20,4 @@
     }
   ]
 }
+
