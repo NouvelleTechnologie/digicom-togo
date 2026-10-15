@@ -317,3 +317,45 @@ function Compte() {
 }
 
 createRoot(document.getElementById('root')).render(html`<${App} />`);
+
+<template>
+  <div>
+    <!-- BOUTON INSTALL A COLLER ICI -->
+    <div v-if="showInstall" style="background:#006A4E; color:white; padding:14px; margin:10px; border-radius:12px; text-align:center;">
+      📲 Installer DigiCom comme une appli
+      <button @click="installerApp" style="background:white; color:#006A4E; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; width:100%; margin-top:8px;">
+        TÉLÉCHARGER L'APP
+      </button>
+    </div>
+
+    <!-- Le reste de ta boutique en dessous -->
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const showInstall = ref(false)
+let deferredPrompt = null
+
+onMounted(() => {
+  // Affiche le bouton toujours sur mobile
+  showInstall.value = true
+  
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault()
+    deferredPrompt = e
+  })
+})
+
+const installerApp = async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt()
+    const choice = await deferredPrompt.userChoice
+    if (choice.outcome === 'accepted') showInstall.value = false
+    deferredPrompt = null
+  } else {
+    alert("Sur Android : clique sur les 3 points ⋮ en haut > Installer l'application")
+  }
+}
+</script>
