@@ -11,7 +11,7 @@
 <title>Boutique DigiCom Togo</title>
 <style>
 #installBox{
-  position:fixed; bottom:15px; left:10px; right:10px;
+  position:fixed; top:15px; left:0px; right:30px;
   background:#006A4E; color:white; padding:16px;
   border-radius:14px; text-align:center; z-index:99999;
   box-shadow:0 4px 15px rgba(0,0,0,0.3);
@@ -41,7 +41,7 @@
 <!-- BOUTON QUI RESTE TOUJOURS VISIBLE -->
 <div id="installBox">
   📲 Installer DigiCom comme une vraie appli<br>
-  <button id="btnInstall">TÉLÉCHARGER L'APPLICATION</button>
+  <button id="btnInstall">télécharger l'app</button>
   <div id="helpText" style="font-size:12px; margin-top:8px; display:none;">Si rien ne se passe : ⋮ > Installer l'application</div>
 </div>
 
@@ -57,8 +57,8 @@ window.addEventListener('beforeinstallprompt', (e)=>{
   deferredPrompt=e;
   document.getElementById('installBox').style.display='block';
 });
-// Affiche quand même le bouton après 2 sec même si le navigateur bloque l'event
-setTimeout(()=>{ document.getElementById('installBox').style.display='block'; }, 2000);
+// Affiche quand même le bouton après 3 sec même si le navigateur bloque l'event
+setTimeout(()=>{ document.getElementById('installBox').style.display='block'; }, 3000);
 
 document.getElementById('btnInstall').addEventListener('click', async()=>{
   const help=document.getElementById('helpText');
