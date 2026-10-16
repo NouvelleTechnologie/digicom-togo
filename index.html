@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boutique DigiCom Togo – achetez des produits locaux au Togo</title>
+<meta name="description" content="DigiCom Togo : la boutique en ligne togolaise. Achetez des produits locaux, payez par Moov Money, Mixx by Yas ou à la livraison, et suivez votre commande en direct.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://nouvelletechnologie.github.io/digicom-togo/">
+<meta name="theme-color" content="#006A4E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DigiCom">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DigiCom Togo">
+<meta property="og:title" content="Boutique DigiCom Togo">
+<meta property="og:description" content="La boutique en ligne du Togo : produits locaux, paiement mobile, livraison suivie en direct.">
+<meta property="og:url" content="https://nouvelletechnologie.github.io/digicom-togo/">
+<meta property="og:image" content="https://nouvelletechnologie.github.io/digicom-togo/icon-512.png">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="stylesheet" href="./styles.css">
+<style>
+#installBox{
+  position:fixed; top:0; left:10px; right:10px;
+  background:#006A4E; color:white; padding:12px;
+  border-radius:0 0 24px 24px; text-align:center; z-index:99999;
+  box-shadow:0 4px 15px rgba(0,0,0,0.3);
+  display:none;
+}
+#btnInstall{
+  background:white; color:#006A4E; border:none;
+  padding:12px; width:60%; border-radius:8px;
+  font-weight:bold; font-size:16px; margin-top:8px;
+}
+#btnClose{
+  position:absolute; top:6px; right:12px; background:none; border:none;
+  color:white; font-size:20px; line-height:1; padding:4px;
+}
+</style>
+<!-- L'importmap doit venir AVANT les scripts de type module -->
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1",
+    "htm": "https://esm.sh/htm@3.1.1",
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
+  }
+}
+</script>
+<script type="module" src="./app.js"></script>
+</head>
+<body>
+
+<div id="installBox">
+  <button id="btnClose" aria-label="Fermer">✕</button>
+  📲 Installer Digicom App<br>
+  <button id="btnInstall">Télécharger l'app</button>
+  <div id="helpText" style="font-size:12px; margin-top:8px; display:none;">Si rien ne se passe : ⋮ &gt; Installer l'application</div>
+</div>
+
+<div id="root" style="padding:20px; font-family:sans-serif;">Chargement...</div>
+<noscript><p style="padding:20px;font-family:sans-serif">DigiCom Togo, la boutique en ligne du Togo. Activez JavaScript pour parcourir les produits et commander.</p></noscript>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(function (e) { console.warn('SW non enregistré', e); });
+}
+
+var deferredPrompt = null;
+var box = document.getElementById('installBox');
+var dejaInstallee = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!dejaInstallee) box.style.display = 'block';
+});
+window.addEventListener('appinstalled', function () { box.style.display = 'none'; });
+
+// Affiche quand même le bouton après 3 s si le navigateur n'envoie pas l'événement
+setTimeout(function () { if (!dejaInstallee) box.style.display = 'block'; }, 3000);
+
+document.getElementById('btnClose').addEventListener('click', function () { box.style.display = 'none'; });
+
+document.getElementById('btnInstall').addEventListener('click', async function () {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    var choice = await deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') box.style.display = 'none';
+    deferredPrompt = null;
+  } else {
+    document.getElementById('helpText').style.display = 'block';
+    alert("Pour installer : touche les 3 points ⋮ en haut à droite de Chrome > Installer l'application");
+  }
+});
+
+// Si l'application n'a pas démarré au bout de 12 s, on l'indique clairement
+setTimeout(function () {
+  var r = document.getElementById('root');
+  if (r && r.textContent.trim() === 'Chargement...') {
+    r.innerHTML = "Impossible de charger l'application. Vérifie ta connexion internet puis recharge la page.";
+  }
+}, 12000);
+</script>
+</body>
+</html>
