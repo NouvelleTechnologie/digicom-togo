@@ -18,7 +18,8 @@ const normTel = (s) => { let d = String(s).replace(/\D/g, ''); if (d.startsWith(
 const telMail = (d) => `228${d}@digicom.tg`; // le numéro sert d'identifiant
 const prixEff = (p) => (p.prixPromo > 0 && (!p.promoFin || ms(p.promoFin) > Date.now()) ? p.prixPromo : p.prix);
 const enPromo = (p) => prixEff(p) < p.prix;
-const visible = (p) => p.actif !== false && ms(p.abonneFin) > Date.now() && (p.statut === undefined || p.statut === 'valide');
+const lienOk = (p) => p.partenaire === true && typeof p.lienAffilie === 'string' && /^https:\/\//i.test(p.lienAffilie.trim());
+const visible = (p) => p.actif !== false && (p.statut === undefined || p.statut === 'valide') && (lienOk(p) || ms(p.abonneFin) > Date.now());
 const go = (p) => { location.hash = p; };
 const erreur = (e) => {
   const c = e?.code || '';
@@ -110,11 +111,11 @@ const Prix = ({ p }) => html`<span className="prix">${fcfa(prixEff(p))}</span>${
 const Carte = ({ p }) => {
   const { favs, toggleFav } = useC();
   return html`<div className="prod">
-    ${p.stock <= 0 && html`<span className="epuise">Épuisé</span>`}${p.stock > 0 && enPromo(p) && html`<span className="promo-b">Promo</span>`}
+    ${!lienOk(p) && p.stock <= 0 && html`<span className="epuise">Épuisé</span>`}${(lienOk(p) || p.stock > 0) && enPromo(p) && html`<span className="promo-b">Promo</span>`}
     <button className="coeur" onClick=${() => toggleFav(p.id)} aria-label="Favori">${favs.includes(p.id) ? '❤️' : '🤍'}</button>
     <a href=${'#/p/' + p.id} style=${{ color: 'inherit', textDecoration: 'none' }}>
       ${p.images?.[0]?.url ? html`<img src=${p.images[0].url} alt=${p.nom} loading="lazy" />` : html`<div className="vignette" />`}
-      <div className="inf"><b>${p.nom}</b><${Prix} p=${p} /><br /><small className="gris">${p.abonneNom}</small></div>
+      <div className="inf"><b>${p.nom}</b><${Prix} p=${p} /><br /><small className="gris">${lienOk(p) ? 'Offre partenaire' : p.abonneNom}</small></div>
     </a></div>`;
 };
 
@@ -123,7 +124,7 @@ function Accueil() {
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('');
   const liste = produits.filter((p) => (!cat || p.categorie === cat) && (!q || (p.nom + ' ' + (p.description || '')).toLowerCase().includes(q.toLowerCase())));
-  const offres = produits.filter((p) => enPromo(p) && p.stock > 0);
+  const offres = produits.filter((p) => enPromo(p) && (lienOk(p) || p.stock > 0));
   return html`<div>
     <input placeholder="Rechercher un produit…" value=${q} onChange=${(e) => setQ(e.target.value)} />
     <div className="chips">${['', ...CATS].map((c) => html`<button key=${c} className=${cat === c ? 'on' : ''} onClick=${() => setCat(c)}>${c || 'Tout'}</button>`)}</div>
@@ -138,6 +139,7 @@ function Produit({ id }) {
   const [ok, setOk] = useState(false);
   const p = produits.find((x) => x.id === id);
   if (!p) return html`<p className="vide">Produit indisponible.</p>`;
+  const aff = lienOk(p);
   const deja = cart.find((i) => i.id === p.id)?.qte || 0;
   const reste = p.stock - deja;
   const wa = 'https://wa.me/?text=' + encodeURIComponent(`${p.nom} – ${fcfa(prixEff(p))} sur DigiCom Togo ${location.origin}${location.pathname}#/p/${p.id}`);
@@ -146,9 +148,12 @@ function Produit({ id }) {
     <div className="galerie" style=${{ marginTop: 10 }}>${(p.images || []).map((im, i) => html`<img key=${i} src=${im.url} alt=${p.nom} />`)}</div>
     <h2 style=${{ marginTop: 12 }}>${p.nom}</h2>
     <p className="total"><${Prix} p=${p} /></p>
-    <p><a href=${'#/b/' + p.abonneId}>🏪 ${p.abonneNom}</a> · <small className="gris">${p.categorie} · ${p.stock > 0 ? p.stock + ' en stock' : 'épuisé'}</small></p>
+    ${aff ? html`<p><small className="gris">Offre partenaire · ${p.categorie} · prix indicatif, susceptible de varier</small></p>`
+      : html`<p><a href=${'#/b/' + p.abonneId}>🏪 ${p.abonneNom}</a> · <small className="gris">${p.categorie} · ${p.stock > 0 ? p.stock + ' en stock' : 'épuisé'}</small></p>`}
     <p style=${{ margin: '10px 0', whiteSpace: 'pre-wrap' }}>${p.description}</p>
-    ${reste > 0 ? html`<div className="qte"><button onClick=${() => setQte(Math.max(1, qte - 1))}>−</button><b>${qte}</b><button onClick=${() => setQte(Math.min(reste, qte + 1))}>+</button></div>
+    ${aff ? html`<a className="btn plein-l" href=${p.lienAffilie.trim()} target="_blank" rel="sponsored nofollow noopener">Voir l'offre sur AliExpress</a>
+      <p className="alerte info" style=${{ marginTop: 10 }}>Lien d'affiliation : DigiCom Togo peut percevoir une commission, sans frais pour toi. Le paiement et la livraison se font sur le site du vendeur partenaire.</p>`
+    : reste > 0 ? html`<div className="qte"><button onClick=${() => setQte(Math.max(1, qte - 1))}>−</button><b>${qte}</b><button onClick=${() => setQte(Math.min(reste, qte + 1))}>+</button></div>
       <button className="btn plein-l" onClick=${() => { ajouter(p, qte); setOk(true); }}>Ajouter au panier</button>` : html`<p className="alerte info">${p.stock > 0 ? 'Tout le stock est déjà dans ton panier.' : 'Produit épuisé.'}</p>`}
     ${ok && html`<p className="alerte ok">Ajouté ! <a href="#/panier">Voir le panier</a></p>`}
     <div className="actions"><button className="btn gris-b" onClick=${() => toggleFav(p.id)}>${favs.includes(p.id) ? '❤️ Dans mes favoris' : '🤍 Ajouter aux favoris'}</button><a className="wa" href=${wa} target="_blank" rel="noopener">Partager sur WhatsApp</a></div></div>`;
