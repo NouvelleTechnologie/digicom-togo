@@ -152,7 +152,7 @@ function Produit({ id }) {
       : html`<p><a href=${'#/b/' + p.abonneId}>🏪 ${p.abonneNom}</a> · <small className="gris">${p.categorie} · ${p.stock > 0 ? p.stock + ' en stock' : 'épuisé'}</small></p>`}
     <p style=${{ margin: '10px 0', whiteSpace: 'pre-wrap' }}>${p.description}</p>
     ${aff ? html`<a className="btn plein-l" href=${p.lienAffilie.trim()} target="_blank" rel="sponsored nofollow noopener">Voir l'offre sur AliExpress</a>
-      <p className="alerte info" style=${{ marginTop: 10 }}>Lien d'affiliation : DigiCom Togo peut percevoir une commission, sans frais pour toi. Le paiement et la livraison se font sur le site du vendeur partenaire.</p>`
+      <p className="alerte info" style=${{ marginTop: 10 }}>☢️ Lien d'affiliation : DigiCom Togo te donne l'occasion de percevoir une commission chez AliExpress, sans frais pour pour l'acheteur. ⚠️Le paiement et la livraison se font sur le site du vendeur partenaire.</p>`
     : reste > 0 ? html`<div className="qte"><button onClick=${() => setQte(Math.max(1, qte - 1))}>−</button><b>${qte}</b><button onClick=${() => setQte(Math.min(reste, qte + 1))}>+</button></div>
       <button className="btn plein-l" onClick=${() => { ajouter(p, qte); setOk(true); }}>Ajouter au panier</button>` : html`<p className="alerte info">${p.stock > 0 ? 'Tout le stock est déjà dans ton panier.' : 'Produit épuisé.'}</p>`}
     ${ok && html`<p className="alerte ok">Ajouté ! <a href="#/panier">Voir le panier</a></p>`}
